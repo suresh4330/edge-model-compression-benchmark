@@ -30,12 +30,13 @@ It combines PyTorch model workflows, a FastAPI inference service, and a React da
 7. [Architecture](#architecture)
 8. [Technology Stack](#technology-stack)
 9. [Run Locally](#run-locally)
-10. [API Reference](#api-reference)
-11. [Reproducing Results](#reproducing-results)
-12. [Project Structure](#project-structure)
-13. [Limitations](#limitations)
-14. [Roadmap](#roadmap)
-15. [License](#license)
+10. [Deploy to Render and Vercel](#deploy-to-render-and-vercel)
+11. [API Reference](#api-reference)
+12. [Reproducing Results](#reproducing-results)
+13. [Project Structure](#project-structure)
+14. [Limitations](#limitations)
+15. [Roadmap](#roadmap)
+16. [License](#license)
 
 ---
 
@@ -190,6 +191,34 @@ cd frontend
 npm run lint
 npm run build
 ```
+
+## Deploy to Render and Vercel
+
+Deploy the backend before the frontend so the Vercel build can receive the live API URL.
+
+### Backend: Render
+
+1. In Render, create a **Blueprint** from this GitHub repository.
+2. Render detects the root [`render.yaml`](render.yaml) and creates the `edge-bench-api` web service.
+3. Deploy it and copy its public URL, for example `https://edge-bench-api.onrender.com`.
+
+The Blueprint installs `requirements.txt`, runs Uvicorn on Render's assigned `PORT`, and provides a health check at `/`. The deployed API documentation is available at `/docs`.
+
+### Frontend: Vercel
+
+1. In Vercel, import the same GitHub repository.
+2. Set **Root Directory** to `frontend`.
+3. Add the environment variable below for **Production**, **Preview**, and **Development**:
+
+```text
+VITE_API_BASE_URL=https://edge-bench-api.onrender.com
+```
+
+Replace the example with your actual Render URL. Do not add a trailing slash.
+
+4. Deploy. Vercel uses [`frontend/vercel.json`](frontend/vercel.json) to build the Vite application.
+
+`VITE_API_BASE_URL` is intentionally public browser configuration, not a secret. After changing it in Vercel, redeploy the frontend so Vite can embed the updated value at build time.
 
 ## API Reference
 

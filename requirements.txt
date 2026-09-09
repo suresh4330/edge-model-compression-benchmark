@@ -6,3 +6,5 @@ pandas
 matplotlib
 fastapi
 uvicorn
+pillow
+python-multipart
