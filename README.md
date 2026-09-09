@@ -202,7 +202,7 @@ Deploy the backend before the frontend so the Vercel build can receive the live 
 2. Render detects the root [`render.yaml`](render.yaml) and creates the `edge-bench-api` web service.
 3. Deploy it and copy its public URL, for example `https://edge-bench-api.onrender.com`.
 
-The Blueprint installs `requirements.txt`, runs Uvicorn on Render's assigned `PORT`, and provides a health check at `/`. The deployed API documentation is available at `/docs`.
+The Blueprint installs `requirements-api.txt` (optimized CPU-only PyTorch build), runs Uvicorn on Render's assigned `PORT`, and provides a health check at `/`. The deployed API documentation is available at `/docs`.
 
 ### Frontend: Vercel
 

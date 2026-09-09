@@ -15,7 +15,7 @@ import DeploymentInsights from './components/DeploymentInsights';
 import RecommendationPanel from './components/RecommendationPanel';
 import ModelDetail from './components/ModelDetail';
 import InferenceLab from './components/InferenceLab';
-import { fetchBenchmarkData } from './services/api';
+import { fetchBenchmarkData, FALLBACK_BENCHMARK_DATA } from './services/api';
 import './App.css';
 
 const BENCHMARK_PARAMETERS = {
@@ -47,6 +47,8 @@ const App = () => {
     const [benchmarkData, setBenchmarkData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isUsingFallback, setIsUsingFallback] = useState(false);
+    const [isReconnecting, setIsReconnecting] = useState(false);
     const [selectedModel, setSelectedModel] = useState(null);
     const [activeSection, setActiveSection] = useState('overview');
 
@@ -62,22 +64,32 @@ const App = () => {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
+    const loadData = async (isManualRetry = false) => {
+        if (isManualRetry) setIsReconnecting(true);
+        try {
+            const data = await fetchBenchmarkData();
+            setBenchmarkData(data.map((model) => ({
+                ...model,
+                // Existing recorded values from this repository's benchmark table.
+                parameters: BENCHMARK_PARAMETERS[model.id] ?? 'N/A'
+            })));
+            setIsUsingFallback(false);
+            setError(null);
+            setLoading(false);
+        } catch (err) {
+            console.warn("Backend unavailable or spinning up; using recorded benchmark data:", err);
+            setBenchmarkData(FALLBACK_BENCHMARK_DATA.map((model) => ({
+                ...model,
+                parameters: BENCHMARK_PARAMETERS[model.id] ?? 'N/A'
+            })));
+            setIsUsingFallback(true);
+            setLoading(false);
+        } finally {
+            if (isManualRetry) setIsReconnecting(false);
+        }
+    };
+
     useEffect(() => {
-        const loadData = async () => {
-            try {
-                const data = await fetchBenchmarkData();
-                setBenchmarkData(data.map((model) => ({
-                    ...model,
-                    // Existing recorded values from this repository's benchmark table.
-                    parameters: BENCHMARK_PARAMETERS[model.id] ?? 'N/A'
-                })));
-                setLoading(false);
-            } catch (err) {
-                console.error("Failed to fetch data", err);
-                setError("Failed to connect to the backend API. Please make sure the FastAPI server is running.");
-                setLoading(false);
-            }
-        };
         loadData();
     }, []);
 
@@ -155,6 +167,46 @@ const App = () => {
             <Sidebar activeSection={activeSection} onNavigate={navigateToSection} />
             <main className="main-content">
                 <Header />
+                
+                {isUsingFallback && (
+                    <div style={{
+                        margin: '1.25rem 2rem 0',
+                        padding: '0.85rem 1.25rem',
+                        borderRadius: '10px',
+                        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                        border: '1px solid rgba(234, 179, 8, 0.3)',
+                        color: '#fef08a',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '1rem',
+                        fontSize: '0.875rem'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <Activity size={18} style={{ color: '#eab308', flexShrink: 0 }} />
+                            <span>
+                                <strong>Live API Notice:</strong> The backend is currently waking up (free-tier Render instances sleep when inactive). Displaying recorded benchmark metrics below.
+                            </span>
+                        </div>
+                        <button
+                            onClick={() => loadData(true)}
+                            disabled={isReconnecting}
+                            style={{
+                                backgroundColor: '#eab308',
+                                color: '#1a1a1a',
+                                border: 'none',
+                                borderRadius: '6px',
+                                padding: '0.45rem 0.9rem',
+                                cursor: isReconnecting ? 'not-allowed' : 'pointer',
+                                fontWeight: '600',
+                                fontSize: '0.8rem',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            {isReconnecting ? 'Connecting...' : 'Retry Live API'}
+                        </button>
+                    </div>
+                )}
                 
                 <div className="dashboard-container">
                     
