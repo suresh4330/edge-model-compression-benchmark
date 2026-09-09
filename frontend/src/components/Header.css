@@ -1,0 +1,72 @@
+.header {
+    height: var(--header-height);
+    background-color: var(--bg-sidebar); /* Or a slightly transparent one for glassmorphism */
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--spacing-xl);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    backdrop-filter: blur(10px);
+    background-color: rgba(22, 25, 30, 0.85);
+}
+
+.header-titles h1 {
+    font-size: 20px;
+    color: var(--text-inverse);
+    margin-bottom: 2px;
+}
+
+.header-titles p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.badge {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    display: flex;
+    gap: 6px;
+}
+
+.badge span {
+    color: var(--text-secondary);
+}
+
+.badge strong {
+    color: var(--accent-primary);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 13px;
+    color: var(--accent-success);
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 16px;
+        gap: 16px;
+        align-items: flex-start;
+    }
+}

@@ -1,0 +1,125 @@
+.metric-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.metric-card:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+    background-color: var(--bg-card-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.metric-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.metric-title {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-icon {
+    color: var(--accent-primary);
+    opacity: 0.8;
+}
+
+.metric-value-container {
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-inverse);
+    letter-spacing: -1px;
+}
+
+.metric-trend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.trend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent-success);
+    box-shadow: 0 0 8px var(--accent-success);
+}
+
+.metric-highlight {
+    font-size: 12px;
+    color: var(--accent-success);
+    font-weight: 500;
+}
+
+.metric-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+}
+
+.metric-description {
+    font-size: 13px;
+    color: var(--text-muted);
+    max-width: 60%;
+    position: relative;
+    z-index: 2;
+}
+
+.metric-sparkline {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 60px;
+    height: 20px;
+    opacity: 0.5;
+    z-index: 1;
+}
+
+.metric-sparkline svg {
+    width: 100%;
+    height: 100%;
+}
+
+.metric-card:hover .metric-sparkline path {
+    stroke: var(--accent-primary);
+    transition: var(--transition-normal);
+}
+
+.metric-glow {
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, rgba(0,0,0,0) 70%);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    pointer-events: none;
+}
+
+.metric-card:hover .metric-glow {
+    opacity: 1;
+}

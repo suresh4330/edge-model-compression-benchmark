@@ -1,0 +1,15 @@
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+
+# Node/Vite generated dependencies and bundles
+frontend/node_modules/
+frontend/dist/
+
+# Local runtime logs
+*.log
+*-error.log
+
+# OS metadata
+desktop.ini
+.DS_Store

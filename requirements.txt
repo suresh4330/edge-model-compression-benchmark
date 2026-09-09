@@ -1,0 +1,8 @@
+torch
+torchvision
+tqdm
+torch-pruning
+pandas
+matplotlib
+fastapi
+uvicorn

@@ -1,0 +1,70 @@
+.chart-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chart-card-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.chart-card-header h3 {
+    font-size: 18px;
+    color: var(--text-inverse);
+    margin-bottom: 4px;
+}
+
+.chart-card-header p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.chart-card-content {
+    flex-grow: 1;
+    min-height: 300px;
+    width: 100%;
+    /* Recharts tooltip customization */
+    position: relative;
+}
+
+/* Global Recharts Customization */
+.recharts-default-tooltip {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-md) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+.recharts-tooltip-label {
+    color: var(--text-inverse) !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+}
+
+.recharts-tooltip-item {
+    color: var(--text-secondary) !important;
+    padding: 2px 0 !important;
+}
+
+.recharts-tooltip-item-name {
+    color: var(--text-secondary) !important;
+}
+
+.recharts-tooltip-item-value {
+    color: var(--text-inverse) !important;
+    font-weight: 500 !important;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+    stroke: var(--border-color) !important;
+}
+
+.recharts-text {
+    fill: var(--text-secondary) !important;
+    font-size: 12px;
+}
