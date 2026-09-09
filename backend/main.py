@@ -3,6 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 import time
+import gc
 from types import MethodType
 import torch
 import torch.nn.functional as F
@@ -103,6 +104,12 @@ def _quantized_basic_block_forward(block, x):
 def get_model(model_id: str):
     if model_id in _model_cache:
         return _model_cache[model_id]
+
+    # Render's free instance has limited memory. Retain only the active model
+    # so Compare All Models can run sequentially without keeping four complete
+    # checkpoints resident at once.
+    _model_cache.clear()
+    gc.collect()
         
     # Keep all PyTorch references bound to the module-level import above.  In
     # particular, do not import or assign ``torch`` in this function: Python
