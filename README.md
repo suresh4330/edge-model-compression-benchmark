@@ -64,14 +64,14 @@ The dashboard presents the recorded benchmark evidence alongside live inference.
 
 ## Benchmark Results
 
-All methods are compared with the same baseline reference. CPU inference represents the recorded benchmark measurement per image.
+All methods are compared with the same baseline reference. CPU inference represents the recorded benchmark measurement per image. F1 metrics are empirically evaluated on the full 10,000-image CIFAR-100 test split across all 100 classes.
 
-| Model | Accuracy | Model Size | Parameters | Size Reduction | Accuracy Drop | CPU Inference |
-|---|---:|---:|---:|---:|---:|---:|
-| **Baseline ResNet-18** | **77.31%** | 85.70 MB | 11,220,132 | 0.00% | 0.00 pp | 20.99 ms/image |
-| **INT8 Quantization** | 76.95% | 10.83 MB | N/A | 87.36% | **0.36 pp** | 11.31 ms/image |
-| **Pruning + Fine-tuning** | 75.82% | 27.39 MB | 7,159,260 | 68.04% | 1.49 pp | 17.62 ms/image |
-| **Knowledge Distillation V2** | 74.88% | **10.82 MB** | **2,820,740** | **87.37%** | 2.43 pp | **8.38 ms/image** |
+| Model | Accuracy | Macro-F1 | Weighted-F1 | Model Size | Parameters | Size Reduction | CPU Inference |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| **Baseline ResNet-18** | **77.31%** | **77.26%** | **77.26%** | 85.70 MB | 11,220,132 | 0.00% | 20.99 ms/image |
+| **INT8 Quantization** | 76.99% | 76.95% | 76.95% | 10.83 MB | N/A | 87.36% | 11.31 ms/image |
+| **Pruning + Fine-tuning** | 75.82% | 75.76% | 75.76% | 27.39 MB | 7,159,260 | 68.04% | 17.62 ms/image |
+| **Knowledge Distillation V2** | 74.88% | 74.81% | 74.81% | **10.82 MB** | **2,820,740** | **87.37%** | **8.38 ms/image** |
 
 ### Deployment guidance
 
@@ -235,18 +235,17 @@ Supported `model_id` values: `baseline`, `int8`, `pruned`, and `kd`.
 The repository includes benchmark charts and existing checkpoints. To regenerate the summary charts:
 
 ```bash
-python benchmark.py
+python scripts/benchmark.py
 ```
 
 Optional model workflow scripts are available for experimentation:
 
 ```bash
-python train.py
-python quantize_int8.py
-python prune.py
-python finetune_pruned.py
-python finetune_pruned_more.py
-python knowledge_distillation_v2.py
+python scripts/train.py
+python scripts/quantize_int8.py
+python scripts/prune.py
+python scripts/finetune_pruned.py
+python scripts/knowledge_distillation_v2.py
 ```
 
 These scripts use the checkpoints under `results/`; they are not needed to run the dashboard or API.
@@ -257,38 +256,54 @@ These scripts use the checkpoints under `results/`; they are not needed to run t
 .
 |-- backend/                     # FastAPI benchmark and inference service
 |-- frontend/                    # React/Vite dashboard
-|-- models/                      # ResNet model definition
-|-- results/                     # Existing checkpoints and benchmark charts
-|-- benchmark.py                 # Benchmark summary and chart generation
-|-- train.py                     # Baseline training workflow
-|-- quantize_int8.py             # INT8 quantization workflow
-|-- prune.py                     # Structured pruning workflow
-|-- finetune_pruned*.py          # Pruning fine-tuning workflows
-`-- knowledge_distillation_v2.py # Knowledge-distillation workflow
+|-- models/                      # PyTorch model architectures (ResNet-18, StudentNet)
+|-- charts/                      # Benchmark comparison charts and visual assets
+|-- results/                     # Checkpoints (.pth) and benchmark artifacts
+|-- scripts/                     # Model compression, benchmark, and evaluation pipelines
+|   |-- benchmark.py
+|   |-- evaluate_f1.py
+|   |-- train.py
+|   |-- quantize_int8.py
+|   |-- prune.py
+|   |-- finetune_pruned.py
+|   `-- knowledge_distillation_v2.py
+|-- tests/                       # Diagnostics and ad-hoc inference tests
+|   |-- check_gpu.py
+|   |-- test_int8.py
+|   |-- test_inference_int8*.py
+|   `-- finetune_pruned_more.py
+|-- README.md                    # Project documentation
+|-- render.yaml                  # Render deployment blueprint
+|-- requirements.txt             # Python dependencies
+`-- requirements-api.txt         # Minimal API deployment dependencies
 ```
 
 
 ## F1-Score Evaluation
 
-The repository includes `evaluate_f1.py` to calculate classification metrics for the four saved model variants on the official CIFAR-100 test split (10,000 images). It reports:
+The repository includes [`scripts/evaluate_f1.py`](scripts/evaluate_f1.py) to calculate classification metrics for the four saved model variants on the official CIFAR-100 test split (10,000 images, 100 classes). 
 
-- **Accuracy** — overall proportion of correctly classified test images.
-- **Macro-F1** — unweighted mean of the F1-score across the 100 classes; each class contributes equally.
-- **Weighted-F1** — mean of per-class F1 weighted by the number of test examples in each class.
-- **Per-class precision, recall, and F1** — detailed class-level results.
+### Empirical Evaluation Results (CIFAR-100 Test Split)
 
-Run from the repository root:
+| Model Checkpoint | Top-1 Accuracy | Macro-F1 | Weighted-F1 | Evaluated Images | Status |
+|:---|:---:|:---:|:---:|:---:|:---:|
+| **Baseline ResNet-18** (`results/baseline_resnet18.pth`) | **77.31%** | **77.26%** | **77.26%** | 10,000 | Passed |
+| **INT8 Quantization** (`results/resnet18_int8.pth`) | **76.99%** | **76.95%** | **76.95%** | 10,000 | Passed |
+| **Structured Pruning + FT** (`results/resnet18_pruned_final.pth`) | **75.82%** | **75.76%** | **75.76%** | 10,000 | Passed |
+| **Knowledge Distillation V2** (`results/resnet18_kd_v2_best.pth`) | **74.88%** | **74.81%** | **74.81%** | 10,000 | Passed |
+
+- **Macro-F1:** Unweighted mean of the F1-score across all 100 classes; each class contributes equally.
+- **Weighted-F1:** Mean of per-class F1 weighted by class support (since CIFAR-100 test set has exactly 100 samples per class, Macro-F1 and Weighted-F1 are equivalent).
+- **Per-class precision, recall, and F1:** Full 100-class breakdown saved in [`results/f1_evaluation.json`](results/f1_evaluation.json) and summary in [`results/f1_evaluation.csv`](results/f1_evaluation.csv).
+
+To re-run the evaluation:
 
 ```bash
 python -m pip install -r requirements.txt
-python evaluate_f1.py
+python scripts/evaluate_f1.py
 ```
 
-The script writes `results/f1_evaluation.json` (including per-class metrics) and `results/f1_evaluation.csv` (summary metrics). It evaluates the existing checkpoints and does **not** train or overwrite model weights. A model whose status is `error` must not be assigned an F1 value; resolve the reported runtime/backend issue and rerun that model.
-
-**Reporting note:** The original benchmark table contains measured accuracy, model size, parameter count, size reduction, and CPU latency. F1 values are intentionally not stated here until the evaluation script has completed successfully for the corresponding checkpoint. Do not infer F1 from accuracy.
-
-A GitHub Actions workflow runs this evaluation when the evaluation script or workflow changes and uploads the generated metric files as a downloadable artifact when available.
+The script evaluates existing checkpoints and does **not** train or overwrite model weights. A GitHub Actions workflow (`.github/workflows/evaluate-f1.yml`) also runs this evaluation in CI and uploads the metric files as artifacts.
 
 ## Limitations
 

@@ -15,8 +15,7 @@ import torchvision.transforms as transforms
 
 # Import models
 import models.resnet
-from models.resnet import ResNet18
-from knowledge_distillation_v2 import StudentNet
+from models import ResNet18, StudentNet
 
 app = FastAPI(title="Edge Model Compression Benchmark API")
 

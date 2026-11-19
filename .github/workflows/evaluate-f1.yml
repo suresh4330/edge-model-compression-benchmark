@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "evaluate_f1.py"
+      - "scripts/evaluate_f1.py"
       - "backend/**"
       - "models/**"
       - "requirements.txt"
@@ -39,7 +39,7 @@ jobs:
           python -m pip install pandas matplotlib tqdm torch-pruning fastapi uvicorn pillow python-multipart scikit-learn
 
       - name: Run CIFAR-100 F1 evaluation
-        run: python evaluate_f1.py
+        run: python scripts/evaluate_f1.py
 
       - name: Upload F1 evaluation results
         if: always()

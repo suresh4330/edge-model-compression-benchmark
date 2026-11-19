@@ -1,0 +1,5 @@
+model_id,status,test_images,accuracy_percent,macro_f1_percent,weighted_f1_percent,error
+baseline,success,10000,77.31,77.2607,77.2607,
+int8,success,10000,76.99,76.9548,76.9548,
+pruned,success,10000,75.82,75.7604,75.7604,
+kd,success,10000,74.88,74.8069,74.8069,

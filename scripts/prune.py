@@ -1,7 +1,13 @@
+import os
+import sys
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 import torch
 import torch_pruning as tp
 from models.resnet import ResNet18
-import os
 
 def main():
     print("Structured Pruning Workflow")
@@ -10,7 +16,7 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = ResNet18(num_classes=100)
     
-    baseline_path = os.path.join('results', 'baseline_resnet18.pth')
+    baseline_path = os.path.join(ROOT_DIR, 'results', 'baseline_resnet18.pth')
     if os.path.exists(baseline_path):
         model.load_state_dict(torch.load(baseline_path, map_location=device))
         print("Model loaded successfully.")

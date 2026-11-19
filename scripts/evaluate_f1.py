@@ -16,7 +16,12 @@ import argparse
 import csv
 import json
 import os
+import sys
 from datetime import datetime, timezone
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
 import torch
 from sklearn.metrics import accuracy_score, classification_report, f1_score
@@ -97,7 +102,7 @@ def main():
     )
     args = parser.parse_args()
 
-    torch.set_num_threads(max(1, min(4, os.cpu_count() or 1)))
+    torch.set_num_threads(os.cpu_count() or 4)
 
     test_transform = transforms.Compose([
         transforms.ToTensor(),
@@ -105,9 +110,9 @@ def main():
     ])
 
     test_dataset = datasets.CIFAR100(
-        root="./data",
+        root=os.path.join(ROOT_DIR, "data"),
         train=False,
-        download=True,
+        download=False,
         transform=test_transform,
     )
 
@@ -157,8 +162,8 @@ def main():
         "results": results,
     }
 
-    json_path = "results/f1_evaluation.json"
-    csv_path = "results/f1_evaluation.csv"
+    json_path = os.path.join(ROOT_DIR, "results", "f1_evaluation.json")
+    csv_path = os.path.join(ROOT_DIR, "results", "f1_evaluation.csv")
 
     with open(json_path, "w", encoding="utf-8") as file:
         json.dump(payload, file, indent=2)

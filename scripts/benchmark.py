@@ -1,6 +1,17 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import sys
+
+# Ensure project root is on sys.path
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+RESULTS_DIR = os.path.join(ROOT_DIR, "results")
+CHARTS_DIR = os.path.join(ROOT_DIR, "charts")
+os.makedirs(RESULTS_DIR, exist_ok=True)
+os.makedirs(CHARTS_DIR, exist_ok=True)
 
 def main():
     results = [
@@ -73,7 +84,8 @@ def main():
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width()/2, yval + 0.1, round(yval, 2), ha='center', va='bottom')
     plt.tight_layout()
-    plt.savefig('accuracy_comparison.png')
+    plt.savefig(os.path.join(RESULTS_DIR, 'accuracy_comparison.png'))
+    plt.savefig(os.path.join(CHARTS_DIR, 'accuracy_comparison.png'))
     plt.close()
     
     # 2. Model size comparison
@@ -86,7 +98,8 @@ def main():
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width()/2, yval + 1, round(yval, 2), ha='center', va='bottom')
     plt.tight_layout()
-    plt.savefig('model_size_comparison.png')
+    plt.savefig(os.path.join(RESULTS_DIR, 'model_size_comparison.png'))
+    plt.savefig(os.path.join(CHARTS_DIR, 'model_size_comparison.png'))
     plt.close()
     
     # 3. CPU Inference Time Comparison
@@ -99,7 +112,8 @@ def main():
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width()/2, yval + 0.5, round(yval, 2), ha='center', va='bottom')
     plt.tight_layout()
-    plt.savefig('cpu_inference_comparison.png')
+    plt.savefig(os.path.join(RESULTS_DIR, 'cpu_inference_comparison.png'))
+    plt.savefig(os.path.join(CHARTS_DIR, 'cpu_inference_comparison.png'))
     plt.close()
     
     print("Graphs saved to disk.")
